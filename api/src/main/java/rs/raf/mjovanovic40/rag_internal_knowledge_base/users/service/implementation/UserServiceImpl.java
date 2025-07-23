@@ -72,6 +72,19 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * Checks if a user with the given email already exists in the system.
+     *
+     * @param email the email address to check for existence
+     * @return {@code true} if a user with the given email exists, {@code false} otherwise
+     *
+     * @author Milan Jovanovic
+     */
+    @Override
+    public Boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    /**
      * Loads user details by their email address for authentication purposes.
      *
      * @param email the email address used as the username

@@ -8,4 +8,5 @@ public interface UserService extends UserDetailsService {
     User createUser(String email, String password);
     User findUserByEmail(String email);
     User findUserById(String id);
+    Boolean existsByEmail(String email);
 }
