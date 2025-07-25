@@ -26,7 +26,7 @@ public class JwtServiceImpl implements JwtService {
      * Creates a signed JWT token for the given user ID.
      * <p>
      * The token includes the user ID as the subject, the current timestamp as the issue time,
-     * and an expiration date set 24 years from the time of issuance.
+     * and an expiration date set 24 hours from the time of issuance.
      *
      * @param id the user's unique identifier to include as the token subject
      * @return a signed JWT token string
@@ -40,7 +40,7 @@ public class JwtServiceImpl implements JwtService {
                 .subject(id)
                 .signWith(getKey())
                 .issuedAt(Date.from(Instant.now()))
-                .expiration(Date.from(Instant.now().plus(24, ChronoUnit.YEARS)))
+                .expiration(Date.from(Instant.now().plus(24, ChronoUnit.HOURS)))
                 .compact();
     }
 
