@@ -32,5 +32,5 @@ export const register = async (
     password,
   };
 
-  return await axios.post("/api/v1/register", payload);
+  return await axios.post("/api/v1/auth/register", payload);
 };
