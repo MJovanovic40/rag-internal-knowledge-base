@@ -37,7 +37,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public UserDto register(String email, String password) {
-        if(userService.existsByEmail(email)) {
+        if(Boolean.TRUE.equals(userService.existsByEmail(email))) {
             throw new UserExistsException();
         }
         return modelMapper.map(userService.createUser(email, password), UserDto.class);
