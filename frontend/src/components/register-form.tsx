@@ -4,7 +4,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { register } from "@/pages/authentication/api/AuthenticationApi";
+import type { ErrorResponse } from "@/types/ErrorResponse";
 import { useMutation } from "@tanstack/react-query";
+import type { AxiosError } from "axios";
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router";
 import SpinnerCircle from "./customized/spinner/spinner-02";
@@ -26,9 +28,9 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<"div"
     onSuccess: () => {
       navigate("/login");
     },
-    onError: () => {
+    onError: (error: AxiosError<ErrorResponse>) => {
       setWorking(false);
-      setError("Invalid email or password or user exists.");
+      setError(error.response!.data.message);
       setTimeout(() => setError(""), 5000);
     },
   });
