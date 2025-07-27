@@ -4,6 +4,7 @@ import "./App.css";
 import { ThemeProvider } from "./components/theme-provider";
 import LoginPage from "./pages/authentication/LoginPage";
 import RegisterPage from "./pages/authentication/RegisterPage";
+import ChatPage from "./pages/chat/ChatPage";
 
 const queryClient = new QueryClient();
 
@@ -15,6 +16,7 @@ export default function App() {
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/" element={<ChatPage />} />
           </Routes>
         </QueryClientProvider>
       </ThemeProvider>
