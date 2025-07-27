@@ -6,8 +6,48 @@ import { ArrowUp } from "lucide-react";
 export default function ChatPage() {
   return (
     <div className="flex h-full w-full items-center justify-center">
-      <div className="flex flex-col justify-between w-[90%] md:w-3/4 xl:w-1/2 h-2/3 bg-neutral-900 rounded-3xl">
+      <div className="flex flex-col justify-between w-[90%] md:w-3/4 xl:w-1/2 h-[80%] bg-neutral-900 rounded-3xl">
         <div className="overflow-y-auto">
+          <ChatMessage type="user">
+            Lorem Ipsum is simply dummy text of the printing and typesetting
+          </ChatMessage>
+          <ChatMessage type="assistant">
+            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum
+            hasLorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem
+            Ipsum has
+          </ChatMessage>
+          <ChatMessage type="user">
+            Lorem Ipsum is simply dummy text of the printing and typesetting
+          </ChatMessage>
+          <ChatMessage type="assistant">
+            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum
+            hasLorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem
+            Ipsum has
+          </ChatMessage>
+          <ChatMessage type="user">
+            Lorem Ipsum is simply dummy text of the printing and typesetting
+          </ChatMessage>
+          <ChatMessage type="assistant">
+            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum
+            hasLorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem
+            Ipsum has
+          </ChatMessage>
+          <ChatMessage type="user">
+            Lorem Ipsum is simply dummy text of the printing and typesetting
+          </ChatMessage>
+          <ChatMessage type="assistant">
+            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum
+            hasLorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem
+            Ipsum has
+          </ChatMessage>
+          <ChatMessage type="user">
+            Lorem Ipsum is simply dummy text of the printing and typesetting
+          </ChatMessage>
+          <ChatMessage type="assistant">
+            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum
+            hasLorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem
+            Ipsum has
+          </ChatMessage>
           <ChatMessage type="user">
             Lorem Ipsum is simply dummy text of the printing and typesetting
           </ChatMessage>
