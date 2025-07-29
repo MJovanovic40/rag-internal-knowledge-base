@@ -1,4 +1,4 @@
-package rs.raf.mjovanovic40.rag_internal_knowledge_base.chat.dto.requests;
+package rs.raf.mjovanovic40.rag_internal_knowledge_base.chat.dto.request;
 
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;

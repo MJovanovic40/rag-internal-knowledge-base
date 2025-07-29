@@ -1,6 +1,6 @@
 package rs.raf.mjovanovic40.rag_internal_knowledge_base.config.security;
 
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.List;
 
 @RequiredArgsConstructor
+@Getter
 public class AppUserDetails implements UserDetails {
 
     private final User user;
