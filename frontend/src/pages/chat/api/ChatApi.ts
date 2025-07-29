@@ -1,15 +1,14 @@
-import { getUserId } from "@/utils/JwtUtils";
 import type { AxiosResponse } from "axios";
 import axios from "axios";
 
-type ChatResponse = {
+export type ChatResponse = {
   id: string;
   title: string;
   userId: string;
   createdAt: string;
 };
 
-type ChatHistoryResponse = {
+export type ChatHistoryResponse = {
   id: number;
   message: string;
   messageType: "USER" | "ASSISTANT" | "SYSTEM" | "TOOL";
@@ -17,9 +16,7 @@ type ChatHistoryResponse = {
 };
 
 export const getChats = async (): Promise<AxiosResponse<ChatResponse[]>> => {
-  const userId = getUserId();
-
-  return await axios.get(`/api/v1/chats/user/${userId}`, {
+  return await axios.get(`/api/v1/chats/user`, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("auth")}`,
     },
@@ -28,7 +25,7 @@ export const getChats = async (): Promise<AxiosResponse<ChatResponse[]>> => {
 
 export const getChatHisotry = async (
   chatId: string
-): Promise<AxiosResponse<ChatHistoryResponse>> => {
+): Promise<AxiosResponse<ChatHistoryResponse[]>> => {
   return await axios.get(`/api/v1/chats/history/${chatId}`, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("auth")}`,
@@ -38,14 +35,15 @@ export const getChatHisotry = async (
 
 export const sendMessage = async (
   chatId: string,
-  prompt: string
+  message: string
 ): Promise<ReadableStreamDefaultReader<Uint8Array>> => {
-  const response = await fetch(`/api/v1/chat`, {
+  const response = await fetch(`/api/v1/chats`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("auth")}`,
     },
-    body: JSON.stringify({ chatId, prompt }),
+    body: JSON.stringify({ chatId, message }),
   });
 
   if (!response.ok || !response.body) {

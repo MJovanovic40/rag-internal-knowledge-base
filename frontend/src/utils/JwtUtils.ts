@@ -1,11 +1,7 @@
-import jwt from "jsonwebtoken";
+import { jwtDecode } from "jwt-decode";
 
 export const getUserId = (): string | null => {
   const token = localStorage.getItem("auth");
-
   if (!token) return null;
-
-  const payload = jwt.decode(token) as jwt.JwtPayload;
-
-  return payload.sub ?? null;
+  return jwtDecode(token).sub ?? null;
 };
