@@ -36,10 +36,10 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public UserDto register(String email, String password) {
+    public UserDto register(String name, String email, String password) {
         if(Boolean.TRUE.equals(userService.existsByEmail(email))) {
             throw new UserExistsException();
         }
-        return modelMapper.map(userService.createUser(email, password), UserDto.class);
+        return modelMapper.map(userService.createUser(name, email, password), UserDto.class);
     }
 }

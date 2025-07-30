@@ -28,6 +28,7 @@ public class UserServiceImpl implements UserService {
      * The password is securely encoded using the configured {@link PasswordEncoder},
      * and the user's role is set to {@link Role#USER} by default.
      *
+     * @param name the user's name
      * @param email the user's email address
      * @param password the user's raw password
      * @return the saved {@link User} entity
@@ -35,9 +36,10 @@ public class UserServiceImpl implements UserService {
      * @author Milan Jovanovic
      */
     @Override
-    public User createUser(String email, String password) {
+    public User createUser(String name, String email, String password) {
         User user = new User();
         user.setEmail(email);
+        user.setName(name);
         user.setPassword(passwordEncoder.encode(password));
         user.setRole(Role.USER);
         return userRepository.save(user);

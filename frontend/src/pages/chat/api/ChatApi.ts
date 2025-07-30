@@ -34,7 +34,7 @@ export const getChatHisotry = async (
 };
 
 export const sendMessage = async (
-  chatId: string,
+  chatId: string | null,
   message: string
 ): Promise<ReadableStreamDefaultReader<Uint8Array>> => {
   const response = await fetch(`/api/v1/chats`, {
@@ -51,4 +51,12 @@ export const sendMessage = async (
   }
 
   return response.body.getReader();
+};
+
+export const getChat = async (chatId: string): Promise<AxiosResponse<ChatResponse>> => {
+  return await axios.get(`/api/v1/chats/${chatId}`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("auth")}`,
+    },
+  });
 };

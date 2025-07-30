@@ -1,5 +1,4 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import type React from "react";
 
 export interface ChatMessageProps {
   type: "ASSISTANT" | "USER" | "SYSTEM" | "TOOL";
@@ -10,7 +9,7 @@ export default function ChatMessage(props: ChatMessageProps) {
   const userStyles =
     "bg-neutral-300 text-black p-3 rounded-2xl max-w-[60%] float-end min-w-1/3 wrap-break-word overflow-hidden";
   const assistantStyles =
-    "bg-stone-800 text-white p-3 rounded-2xl max-w-[60%] min-w-1/3 wrap-break-word overflow-hidden";
+    "bg-[#262626] text-white p-3 rounded-2xl max-w-[60%] min-w-1/3 wrap-break-word overflow-hidden";
 
   return (
     <>
@@ -19,7 +18,7 @@ export default function ChatMessage(props: ChatMessageProps) {
           <Avatar className="w-12 h-12">
             <AvatarImage
               className="rounded-4xl"
-              src="https://api.dicebear.com/9.x/initials/svg?seed=AI&backgroundColor=292524"
+              src="https://api.dicebear.com/9.x/initials/svg?seed=AI&backgroundColor=262626"
             />
             <AvatarFallback>AI</AvatarFallback>
           </Avatar>

@@ -24,10 +24,12 @@ export const login = async (
 };
 
 export const register = async (
+  name: string,
   email: string,
   password: string
 ): Promise<AxiosResponse<RegisterResponse>> => {
   const payload = {
+    name,
     email,
     password,
   };

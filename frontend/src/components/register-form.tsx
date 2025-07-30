@@ -13,6 +13,7 @@ import SpinnerCircle from "./customized/spinner/spinner-02";
 import { Banner, BannerTitle } from "./ui/shadcn-io/banner";
 
 export function RegisterForm({ className, ...props }: React.ComponentProps<"div">) {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [working, setWorking] = useState(false);
@@ -24,7 +25,7 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<"div"
   }, [navigate]);
 
   const registerMutation = useMutation({
-    mutationFn: () => register(email, password),
+    mutationFn: () => register(name, email, password),
     onSuccess: () => {
       navigate("/login");
     },
@@ -57,11 +58,23 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<"div"
           <form onSubmit={onSubmit}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-3">
+                <Label htmlFor="name">Name</Label>
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="John Doe"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="grid gap-3">
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   type="email"
                   placeholder="m@example.com"
+                  value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
                 />
@@ -73,6 +86,7 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<"div"
                 <Input
                   id="password"
                   type="password"
+                  value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowUp } from "lucide-react";
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { useSearchParams } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import { getChatHisotry, sendMessage, type ChatHistoryResponse } from "./api/ChatApi";
 
 export default function ChatPage() {
@@ -17,6 +17,7 @@ export default function ChatPage() {
   const [streaming, setStreaming] = useState<boolean>(false);
 
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   const getChats = async (chatId: string) => {
     const messages = await getChatHisotry(chatId);
@@ -48,7 +49,6 @@ export default function ChatPage() {
   const newMessage = async () => {
     setStreaming(true);
     const chatId = searchParams.get("chat");
-    if (!chatId) return;
 
     // Clear input
     const userMessage: ChatHistoryResponse = {
@@ -94,31 +94,29 @@ export default function ChatPage() {
             // If using format like "data: {json...}", strip "data: "
             line = line.substring(5);
             const json = JSON.parse(line);
+            const token = json.message;
+            const newChatId = json.chatId;
 
-            if (json.chatId === chatId) {
-              const token = json.message;
+            if (token === "END") {
+              setStreaming(false);
+              if (newChatId != chatId) navigate(`/?chat=${newChatId}`);
+            }
 
-              if (token === "END") {
-                setStreaming(false);
-                return;
+            // Update assistant message atomically
+            setMessages((prev) => {
+              const newMessages = [...prev];
+              const lastIndex = newMessages.length - 1;
+
+              // Only update if it's an assistant message
+              if (newMessages[lastIndex]?.messageType === "ASSISTANT") {
+                newMessages[lastIndex] = {
+                  ...newMessages[lastIndex],
+                  message: newMessages[lastIndex].message + token,
+                };
               }
 
-              // Update assistant message atomically
-              setMessages((prev) => {
-                const newMessages = [...prev];
-                const lastIndex = newMessages.length - 1;
-
-                // Only update if it's an assistant message
-                if (newMessages[lastIndex]?.messageType === "ASSISTANT") {
-                  newMessages[lastIndex] = {
-                    ...newMessages[lastIndex],
-                    message: newMessages[lastIndex].message + token,
-                  };
-                }
-
-                return newMessages;
-              });
-            }
+              return newMessages;
+            });
           } catch (e) {
             console.warn("Invalid JSON chunk:", line, e);
           }

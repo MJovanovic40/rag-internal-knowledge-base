@@ -33,6 +33,11 @@ public class ChatController {
         return chatService.sendMessage(body.getChatId(), body.getMessage(), user.getUser().getId());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ChatDto> getChat(@PathVariable String id) {
+        return ResponseEntity.ok(modelMapper.map(chatService.findById(id), ChatDto.class));
+    }
+
     @GetMapping("/user")
     public ResponseEntity<List<ChatDto>> getUserChats(@AuthenticationPrincipal AppUserDetails user) {
         return ResponseEntity.ok(chatService.getUserChats(user.getUser().getId()));

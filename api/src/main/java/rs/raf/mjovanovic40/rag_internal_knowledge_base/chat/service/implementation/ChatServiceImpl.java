@@ -19,6 +19,7 @@ import rs.raf.mjovanovic40.rag_internal_knowledge_base.chat.service.ChatService;
 import rs.raf.mjovanovic40.rag_internal_knowledge_base.config.exception.CustomException;
 import rs.raf.mjovanovic40.rag_internal_knowledge_base.users.service.UserService;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -75,7 +76,9 @@ public class ChatServiceImpl implements ChatService {
         return chatRepository.findByUser_Id(userId)
                 .stream()
                 .map(element -> modelMapper.map(element, ChatDto.class))
-                .toList();
+                .sorted(Comparator.comparing(ChatDto::getCreatedAt))
+                .toList()
+                .reversed();
     }
 
     private Chat saveChat(Chat chat) {

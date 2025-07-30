@@ -22,7 +22,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<UserDto> register(@RequestBody @Validated RegisterRequest body) {
-        return ResponseEntity.ok(authService.register(body.getEmail(), body.getPassword()));
+        return ResponseEntity.ok(authService.register(body.getName(), body.getEmail(), body.getPassword()));
     }
 
     @PostMapping("/login")
