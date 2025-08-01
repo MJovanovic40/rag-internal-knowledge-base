@@ -11,9 +11,11 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { getUserDetails } from "@/pages/authentication/api/UserApi";
-import { getChats } from "@/pages/chat/api/ChatApi";
-import { useQuery } from "@tanstack/react-query";
+import { useAppSelector } from "@/hooks";
+import type { UserState } from "@/pages/authentication/state/userSlice";
+import { getChats, type ChatResponse } from "@/pages/chat/api/ChatApi";
+import { setConversations } from "@/pages/chat/state/chatSlice";
+import { useDispatch } from "react-redux";
 import { Link } from "react-router";
 
 type UserDetails = {
@@ -56,18 +58,9 @@ const TEMPLATE_AVATAR_URL =
   "https://api.dicebear.com/9.x/initials/svg?seed={initials}&backgroundColor=262626";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const [conversations, setConversations] = React.useState<{ name: string; url: string }[]>([]);
-  const [user, setUser] = React.useState<UserDetails>({
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "https://api.dicebear.com/9.x/initials/svg?seed=SH&backgroundColor=262626",
-  });
-
-  const { isFetched, data } = useQuery({
-    queryKey: ["conversations"],
-    queryFn: () => getChats(),
-    refetchInterval: 3000,
-  });
+  const dispatch = useDispatch();
+  const user = useAppSelector((state) => state.user);
+  const conversations = useAppSelector((state) => state.chat.conversations);
 
   const getInitials = (name: string) => {
     if (name.length === 0) return "U";
@@ -81,44 +74,40 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     return Array.from(components[0])[0] + Array.from(components[1])[0];
   };
 
-  const getUser = async () => {
-    const user = (await getUserDetails()).data;
-    const initials = getInitials(user.name);
-
-    const userDetails: UserDetails = {
+  const convertUser = (user: UserState): UserDetails => {
+    return {
       name: user.name,
       email: user.email,
-      avatar: TEMPLATE_AVATAR_URL.replace("{initials}", initials),
+      avatar: TEMPLATE_AVATAR_URL.replace("{initials}", getInitials(user.name)),
     };
-
-    setUser(userDetails);
   };
 
+  const getConversations = async () => {
+    const resp = await getChats();
+    dispatch(setConversations(resp));
+    return resp;
+  };
+
+  const getConversationsObj = (chatResponse: ChatResponse[]) => {
+    const objs: { name: string; url: string }[] = [];
+
+    chatResponse.forEach((conversation) => {
+      objs.push({
+        name: conversation.title,
+        url: `/?chat=${conversation.id}`,
+      });
+    });
+    return objs;
+  };
+
+  const userObj = convertUser(user);
+  const conversationsObj = getConversationsObj(conversations);
+
   React.useEffect(() => {
-    getUser();
+    getConversations();
   }, []);
 
-  React.useEffect(() => {
-    if (!data) return;
-
-    const conversations: { name: string; url: string }[] = [];
-
-    data.data.forEach((chat) => {
-      const payload = {
-        name: chat.title,
-        url: `/?chat=${chat.id}`,
-      };
-      conversations.push(payload);
-    });
-
-    setConversations(conversations);
-
-    return () => {
-      setConversations([]);
-    };
-  }, [data]);
-
-  if (!isFetched) return "Loading...";
+  // if (!isFetched) return "Loading...";
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -129,10 +118,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={menu.navMain} />
-        <NavProjects projects={conversations} />
+        <NavProjects projects={conversationsObj} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={user} />
+        <NavUser user={userObj} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

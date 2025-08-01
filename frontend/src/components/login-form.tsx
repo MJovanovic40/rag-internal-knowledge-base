@@ -2,8 +2,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAppDispatch } from "@/hooks";
 import { cn } from "@/lib/utils";
 import { login } from "@/pages/authentication/api/AuthenticationApi";
+import { getUserDetails } from "@/pages/authentication/api/UserApi";
+import { setUser } from "@/pages/authentication/state/userSlice";
 import type { ErrorResponse } from "@/types/ErrorResponse";
 import { useMutation } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
@@ -19,14 +22,20 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  const dispatch = useAppDispatch();
+
   useEffect(() => {
     if (localStorage.getItem("auth")) navigate("/");
   }, [navigate]);
 
   const loginMutation = useMutation({
     mutationFn: () => login(email, password),
-    onSuccess: (response) => {
+    onSuccess: async (response) => {
       localStorage.setItem("auth", response.data.jwt);
+
+      const user = await getUserDetails();
+      dispatch(setUser(user));
+
       navigate("/");
     },
     onError: (error: AxiosError<ErrorResponse>) => {

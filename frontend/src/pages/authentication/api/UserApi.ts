@@ -1,5 +1,4 @@
-import type { AxiosResponse } from "axios";
-import axios from "axios";
+import { axiosClient } from "@/http/AxiosProvider";
 
 export type User = {
   id: string;
@@ -9,10 +8,11 @@ export type User = {
   createdAt: string;
 };
 
-export const getUserDetails = async (): Promise<AxiosResponse<User>> => {
-  return axios.get(`/api/v1/users`, {
+export const getUserDetails = async (): Promise<User> => {
+  const resp = await axiosClient.get(`/api/v1/users`, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("auth")}`,
     },
   });
+  return resp.data;
 };

@@ -1,5 +1,4 @@
-import type { AxiosResponse } from "axios";
-import axios from "axios";
+import { axiosClient } from "@/http/AxiosProvider";
 
 export type ChatResponse = {
   id: string;
@@ -15,22 +14,24 @@ export type ChatHistoryResponse = {
   createdAt: string;
 };
 
-export const getChats = async (): Promise<AxiosResponse<ChatResponse[]>> => {
-  return await axios.get(`/api/v1/chats/user`, {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("auth")}`,
-    },
-  });
+export const getChats = async (): Promise<ChatResponse[]> => {
+  return (
+    await axiosClient.get(`/api/v1/chats/user`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("auth")}`,
+      },
+    })
+  ).data;
 };
 
-export const getChatHisotry = async (
-  chatId: string
-): Promise<AxiosResponse<ChatHistoryResponse[]>> => {
-  return await axios.get(`/api/v1/chats/history/${chatId}`, {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("auth")}`,
-    },
-  });
+export const getChatHisotry = async (chatId: string): Promise<ChatHistoryResponse[]> => {
+  return (
+    await axiosClient.get(`/api/v1/chats/history/${chatId}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("auth")}`,
+      },
+    })
+  ).data;
 };
 
 export const sendMessage = async (
@@ -53,10 +54,12 @@ export const sendMessage = async (
   return response.body.getReader();
 };
 
-export const getChat = async (chatId: string): Promise<AxiosResponse<ChatResponse>> => {
-  return await axios.get(`/api/v1/chats/${chatId}`, {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("auth")}`,
-    },
-  });
+export const getChat = async (chatId: string): Promise<ChatResponse> => {
+  return (
+    await axiosClient.get(`/api/v1/chats/${chatId}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("auth")}`,
+      },
+    })
+  ).data;
 };

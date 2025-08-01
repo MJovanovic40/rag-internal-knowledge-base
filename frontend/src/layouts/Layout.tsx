@@ -8,10 +8,10 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { getChat, type ChatResponse } from "@/pages/chat/api/ChatApi";
+import { useAppSelector } from "@/hooks";
 import { Separator } from "@radix-ui/react-separator";
 import { useEffect, useState, type JSX } from "react";
-import { useLocation, useSearchParams } from "react-router";
+import { useLocation } from "react-router";
 
 type ComponentInfo = {
   pageComponent: JSX.Element;
@@ -20,15 +20,10 @@ type ComponentInfo = {
 
 export default function Layout(props: ComponentInfo) {
   const [currentLocation, setCurrentLocation] = useState<string>();
-  const [currentSublocation, setCurrentSublocation] = useState<string>();
-  const [currentChat, setCurrentChat] = useState<ChatResponse | null>();
 
   const location = useLocation();
-  const [searchParams] = useSearchParams();
 
-  const getCurrentChat = async (chatId: string) => {
-    setCurrentChat((await getChat(chatId)).data);
-  };
+  const currentChat = useAppSelector((state) => state.chat.current);
 
   useEffect(() => {
     if (location == null) return;
@@ -44,25 +39,6 @@ export default function Layout(props: ComponentInfo) {
     setCurrentLocation(section);
   }, [location]);
 
-  useEffect(() => {
-    if (searchParams == null) return;
-
-    const chatId = searchParams.get("chat");
-
-    if (chatId) getCurrentChat(chatId);
-    else setCurrentSublocation("New Chat");
-  }, [searchParams]);
-
-  useEffect(() => {
-    if (currentLocation == "Chat") {
-      if (currentChat == null) {
-        setCurrentSublocation("New Chat");
-        return;
-      }
-      setCurrentSublocation(currentChat.title);
-    }
-  }, [currentChat, currentLocation]);
-
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -76,11 +52,11 @@ export default function Layout(props: ComponentInfo) {
                 <BreadcrumbItem className="hidden md:block">
                   <BreadcrumbLink href="#">{currentLocation}</BreadcrumbLink>
                 </BreadcrumbItem>
-                {currentSublocation && (
+                {currentChat && (
                   <>
                     <BreadcrumbSeparator className="hidden md:block" />
                     <BreadcrumbItem>
-                      <BreadcrumbPage>{currentSublocation}</BreadcrumbPage>
+                      <BreadcrumbPage>{currentChat.title}</BreadcrumbPage>
                     </BreadcrumbItem>
                   </>
                 )}

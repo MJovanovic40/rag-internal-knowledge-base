@@ -1,10 +1,13 @@
 import ChatMessage from "@/components/chat/chat-message";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { useAppSelector } from "@/hooks";
 import { ArrowUp } from "lucide-react";
 import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router";
 import { getChatHisotry, sendMessage, type ChatHistoryResponse } from "./api/ChatApi";
+import { addConversation, setCurrentChat } from "./state/chatSlice";
 
 export default function ChatPage() {
   const chatRef = useRef<HTMLDivElement>(null);
@@ -19,10 +22,19 @@ export default function ChatPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
+  const dispatch = useDispatch();
+  const conversations = useAppSelector((state) => state.chat.conversations);
+
+  const getConversationById = (id: string) => {
+    for (let i = 0; i < conversations.length; i++) {
+      if (conversations[i].id === id) return conversations[i];
+    }
+    return null;
+  };
+
   const getChats = async (chatId: string) => {
     const messages = await getChatHisotry(chatId);
-
-    setMessages(messages.data);
+    setMessages(messages);
   };
 
   const onSubmit = async (e: FormEvent) => {
@@ -41,10 +53,6 @@ export default function ChatPage() {
       behavior: "smooth",
     });
   };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
 
   const newMessage = async () => {
     setStreaming(true);
@@ -99,6 +107,14 @@ export default function ChatPage() {
 
             if (token === "END") {
               setStreaming(false);
+              dispatch(
+                addConversation({
+                  userId: "",
+                  createdAt: "",
+                  id: newChatId,
+                  title: json.title,
+                })
+              );
               if (newChatId != chatId) navigate(`/?chat=${newChatId}`);
             }
 
@@ -148,9 +164,27 @@ export default function ChatPage() {
   useEffect(() => {
     const chatId = searchParams.get("chat");
 
-    if (!chatId) return;
+    if (!chatId) {
+      dispatch(
+        setCurrentChat({
+          id: "",
+          title: "New Chat",
+        })
+      );
+      return;
+    }
 
     getChats(chatId);
+
+    const conversation = getConversationById(chatId);
+
+    if (conversation != null)
+      dispatch(
+        setCurrentChat({
+          id: conversation.id,
+          title: conversation.title,
+        })
+      );
 
     scrollToTop();
 
@@ -159,6 +193,10 @@ export default function ChatPage() {
       scrollToTop();
     };
   }, [searchParams]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   return (
     <div ref={chatRef} className="w-[90%] xl:w-[60%] mt-22 ">
