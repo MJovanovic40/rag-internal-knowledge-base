@@ -21,7 +21,6 @@ import rs.raf.mjovanovic40.rag_internal_knowledge_base.users.service.UserService
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -56,18 +55,21 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public Flux<ServerSentEvent<ChatChunkResponse>> sendMessage(String chatId, String message, String userId) {
+        String title;
         if (chatId == null) {
-            String title = llmService.promptLLM(
+            title = llmService.promptLLM(
                     new UserMessage("Generate a title (only consisting of a few words without any reasoning) for the topic of the following prompt: " + message)
             );
             chatId = create(title, userId).getId();
+        } else {
+            title = null;
         }
 
         String finalChatId = chatId;
         return llmService
                 .streamLLM(chatId, new UserMessage(message))
                 .concatWith(Flux.just("END"))
-                .map(content -> new ChatChunkResponse(finalChatId, content))
+                .map((content) -> new ChatChunkResponse(finalChatId, title, content))
                 .map(chunk -> ServerSentEvent.builder(chunk).build());
     }
 
@@ -79,6 +81,11 @@ public class ChatServiceImpl implements ChatService {
                 .sorted(Comparator.comparing(ChatDto::getCreatedAt))
                 .toList()
                 .reversed();
+    }
+
+    @Override
+    public ChatDto findDtoById(String id) {
+        return modelMapper.map(findById(id), ChatDto.class);
     }
 
     private Chat saveChat(Chat chat) {

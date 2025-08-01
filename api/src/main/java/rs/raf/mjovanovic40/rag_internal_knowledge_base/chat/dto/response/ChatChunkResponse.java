@@ -10,5 +10,6 @@ import lombok.NoArgsConstructor;
 public class ChatChunkResponse {
 
     private String chatId;
+    private String title;
     private String message;
 }

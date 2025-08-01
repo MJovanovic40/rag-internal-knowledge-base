@@ -1,7 +1,6 @@
 package rs.raf.mjovanovic40.rag_internal_knowledge_base.chat;
 
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.ServerSentEvent;
@@ -26,7 +25,6 @@ public class ChatController {
 
     private final ChatService chatService;
     private final ChatMessageService chatMessageService;
-    private final ModelMapper modelMapper;
 
     @PostMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<ChatChunkResponse>> sendMessage(@RequestBody @Validated ChatRequest body, @AuthenticationPrincipal AppUserDetails user) {
@@ -35,7 +33,7 @@ public class ChatController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ChatDto> getChat(@PathVariable String id) {
-        return ResponseEntity.ok(modelMapper.map(chatService.findById(id), ChatDto.class));
+        return ResponseEntity.ok(chatService.findDtoById(id));
     }
 
     @GetMapping("/user")
@@ -45,6 +43,6 @@ public class ChatController {
 
     @GetMapping("/history/{id}")
     public ResponseEntity<List<ChatMessageDto>> getHistory(@PathVariable String id) {
-        return ResponseEntity.ok(chatMessageService.getChatHistory(id).stream().map(element -> modelMapper.map(element, ChatMessageDto.class)).toList());
+        return ResponseEntity.ok(chatMessageService.getChatHistoryDto(id));
     }
 }

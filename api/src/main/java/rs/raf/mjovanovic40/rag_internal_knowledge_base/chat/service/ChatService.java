@@ -15,4 +15,5 @@ public interface ChatService {
     void delete(String id);
     Flux<ServerSentEvent<ChatChunkResponse>> sendMessage(String chatId, String message, String userId);
     List<ChatDto> getUserChats(String userId);
+    ChatDto findDtoById(String id);
 }
