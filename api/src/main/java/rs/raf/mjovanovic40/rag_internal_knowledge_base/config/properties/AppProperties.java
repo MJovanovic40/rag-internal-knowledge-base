@@ -10,4 +10,16 @@ public class AppProperties {
 
     @Value("${jwt.secret}")
     private String jwtSecret;
+
+    @Value("${minio.url}")
+    private String minioUrl;
+
+    @Value("${minio.username}")
+    private String minioUsername;
+
+    @Value("${minio.password}")
+    private String minioPassword;
+
+    @Value("${minio.bucket.name}")
+    private String minioBucketName;
 }
