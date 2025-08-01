@@ -69,7 +69,7 @@ public class ChatServiceImpl implements ChatService {
         return llmService
                 .streamLLM(chatId, new UserMessage(message))
                 .concatWith(Flux.just("END"))
-                .map((content) -> new ChatChunkResponse(finalChatId, title, content))
+                .map(content -> new ChatChunkResponse(finalChatId, title, content))
                 .map(chunk -> ServerSentEvent.builder(chunk).build());
     }
 
