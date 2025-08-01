@@ -1,30 +1,25 @@
 package rs.raf.mjovanovic40.rag_internal_knowledge_base.knowledgebase.service.implementation;
 
-import io.minio.GetPresignedObjectUrlArgs;
-import io.minio.MinioClient;
-import io.minio.PutObjectArgs;
-import io.minio.RemoveObjectArgs;
-import io.minio.http.Method;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import rs.raf.mjovanovic40.rag_internal_knowledge_base.config.exception.CustomException;
-import rs.raf.mjovanovic40.rag_internal_knowledge_base.config.properties.AppProperties;
 import rs.raf.mjovanovic40.rag_internal_knowledge_base.knowledgebase.dto.DocumentDto;
 import rs.raf.mjovanovic40.rag_internal_knowledge_base.knowledgebase.dto.DocumentUrlDto;
 import rs.raf.mjovanovic40.rag_internal_knowledge_base.knowledgebase.exception.DocumentNotFoundException;
 import rs.raf.mjovanovic40.rag_internal_knowledge_base.knowledgebase.model.Document;
 import rs.raf.mjovanovic40.rag_internal_knowledge_base.knowledgebase.repository.DocumentRepository;
 import rs.raf.mjovanovic40.rag_internal_knowledge_base.knowledgebase.service.FileService;
+import rs.raf.mjovanovic40.rag_internal_knowledge_base.knowledgebase.service.MinioService;
+import rs.raf.mjovanovic40.rag_internal_knowledge_base.knowledgebase.service.VectorStoreService;
 import rs.raf.mjovanovic40.rag_internal_knowledge_base.knowledgebase.utils.FileUtils;
 import rs.raf.mjovanovic40.rag_internal_knowledge_base.users.model.User;
 import rs.raf.mjovanovic40.rag_internal_knowledge_base.users.service.UserService;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -33,9 +28,9 @@ public class FileServiceImpl implements FileService {
     private final ModelMapper modelMapper;
 
     private final DocumentRepository documentRepository;
-    private final MinioClient minioClient;
     private final UserService userService;
-    private final AppProperties appProperties;
+    private final MinioService minioService;
+    private final VectorStoreService vectorStoreService;
 
     @Override
     public void save(MultipartFile[] files, String userId) {
@@ -56,19 +51,8 @@ public class FileServiceImpl implements FileService {
 
         String objectName = FileUtils.getObjectName(document.getName(), document.getId());
 
-        try {
-            minioClient.removeObject(
-                    RemoveObjectArgs
-                            .builder()
-                            .bucket(appProperties.getMinioBucketName())
-                            .object(objectName)
-                            .build()
-            );
-        } catch (Exception e ) {
-            log.error(e.getMessage());
-            throw new CustomException(e.getMessage());
-        }
-
+        minioService.deleteObject(objectName);
+        vectorStoreService.removeFromVectorStore(id);
         documentRepository.delete(document);
     }
 
@@ -78,23 +62,7 @@ public class FileServiceImpl implements FileService {
 
         String objectName = FileUtils.getObjectName(document.getName(), document.getId());
 
-        String url;
-        try {
-            url = minioClient.getPresignedObjectUrl(
-                    GetPresignedObjectUrlArgs
-                            .builder()
-                            .bucket(appProperties.getMinioBucketName())
-                            .object(objectName)
-                            .expiry(1, TimeUnit.DAYS)
-                            .method(Method.GET)
-                            .build()
-            );
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            throw new CustomException(e.getMessage());
-        }
-
-        return new DocumentUrlDto(url);
+        return new DocumentUrlDto(minioService.getPresignedObjectUrl(objectName));
     }
 
     private Document findById(String id) {
@@ -115,20 +83,11 @@ public class FileServiceImpl implements FileService {
         String objectName = FileUtils.getObjectName(fileName, id);
 
         try {
-            minioClient.putObject(
-                    PutObjectArgs
-                            .builder()
-                            .bucket(appProperties.getMinioBucketName())
-                            .object(objectName)
-                            .contentType(file.getContentType())
-                            .stream(file.getInputStream(), file.getSize(), -1)
-                            .build()
-            );
+            minioService.upload(objectName, file.getContentType(), file.getSize(), file.getInputStream());
+            vectorStoreService.addToVectorStore(document);
         } catch (Exception e) {
-            log.error(e.getMessage());
-
             documentRepository.delete(document);
-
+            log.error(e.getMessage());
             throw new CustomException(e.getMessage());
         }
     }
