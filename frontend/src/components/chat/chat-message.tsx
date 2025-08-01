@@ -1,4 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { Spinner } from "../ui/shadcn-io/spinner";
 
 export interface ChatMessageProps {
   type: "ASSISTANT" | "USER" | "SYSTEM" | "TOOL";
@@ -23,10 +24,12 @@ export default function ChatMessage(props: ChatMessageProps) {
             <AvatarFallback>AI</AvatarFallback>
           </Avatar>
           <div className={assistantStyles}>
-            {props.text.split("\n").map((str, i) => {
-              if (str) return <p key={`p-${i}`}>{str}</p>;
-              else return <br key={`br-${i}`} />;
-            })}
+            {props.text.length == 0 && <Spinner variant="ellipsis" />}
+            {props.text.length > 0 &&
+              props.text.split("\n").map((str, i) => {
+                if (str) return <p key={`p-${i}`}>{str}</p>;
+                else return <br key={`br-${i}`} />;
+              })}
           </div>
         </div>
       ) : (

@@ -107,15 +107,18 @@ export default function ChatPage() {
 
             if (token === "END") {
               setStreaming(false);
-              dispatch(
-                addConversation({
-                  userId: "",
-                  createdAt: "",
-                  id: newChatId,
-                  title: json.title,
-                })
-              );
-              if (newChatId != chatId) navigate(`/?chat=${newChatId}`);
+              if (newChatId != chatId) {
+                dispatch(
+                  addConversation({
+                    userId: "",
+                    createdAt: "",
+                    id: newChatId,
+                    title: json.title,
+                  })
+                );
+                navigate(`/?chat=${newChatId}`);
+              }
+              return;
             }
 
             // Update assistant message atomically
@@ -209,7 +212,12 @@ export default function ChatPage() {
           })}
         <span ref={chatEndRef} className="h-20"></span>
       </div>
-      <div className="w-full h-20 bg-neutral-900 fixed bottom-0 ">
+      <div
+        className={`w-full h-20 bg-neutral-900 fixed bottom-${messages.length == 0 ? "1/2" : "0"}`}
+      >
+        {messages && messages.length == 0 && (
+          <h1 className="text-4xl text-center w-1/2 pb-6">What would you like to talk about?</h1>
+        )}
         <form ref={formRef} style={{ width: chatWidth }} onSubmit={onSubmit}>
           <div className="flex justify-center items-center gap-3 pb-3 w-full">
             <Textarea
