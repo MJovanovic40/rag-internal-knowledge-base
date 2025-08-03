@@ -9,8 +9,10 @@ import {
 } from "@/components/ui/breadcrumb";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { useAppSelector } from "@/hooks";
+import { setCurrentChat } from "@/pages/chat/state/chatSlice";
 import { Separator } from "@radix-ui/react-separator";
 import { useEffect, useState, type JSX } from "react";
+import { useDispatch } from "react-redux";
 import { useLocation } from "react-router";
 
 type ComponentInfo = {
@@ -24,6 +26,7 @@ export default function Layout(props: ComponentInfo) {
   const location = useLocation();
 
   const currentChat = useAppSelector((state) => state.chat.current);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (location == null) return;
@@ -33,7 +36,10 @@ export default function Layout(props: ComponentInfo) {
     switch (location.pathname) {
       case "/":
         section = "Chat";
-
+        break;
+      case "/knowledge-base":
+        section = "Knowledge Base";
+        dispatch(setCurrentChat({ id: "", title: "" }));
         break;
     }
     setCurrentLocation(section);
@@ -52,7 +58,7 @@ export default function Layout(props: ComponentInfo) {
                 <BreadcrumbItem className="hidden md:block">
                   <BreadcrumbLink href="#">{currentLocation}</BreadcrumbLink>
                 </BreadcrumbItem>
-                {currentChat && (
+                {currentChat.title && (
                   <>
                     <BreadcrumbSeparator className="hidden md:block" />
                     <BreadcrumbItem>

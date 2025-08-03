@@ -4,11 +4,13 @@ import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import userReducer from "./pages/authentication/state/userSlice";
 import chatReducer from "./pages/chat/state/chatSlice";
+import documentsReducer from "./pages/knowledge-base/state/documentsSlice";
 
 // 1. Combine your reducers
 const rootReducer = combineReducers({
   user: userReducer,
   chat: chatReducer,
+  documents: documentsReducer,
 });
 
 // 2. Set up persistence config

@@ -30,25 +30,14 @@ const menu: {
     title: string;
     url: string;
     icon: LucideIcon;
-    items: { title: string; url: string }[];
   }[];
   projects: { name: string; url: string }[];
 } = {
   navMain: [
     {
       title: "Knowledge Base",
-      url: "#",
+      url: "/knowledge-base",
       icon: BookOpen,
-      items: [
-        {
-          title: "Browse Documents",
-          url: "#",
-        },
-        {
-          title: "Add Documents",
-          url: "#",
-        },
-      ],
     },
   ],
   projects: [],
@@ -113,7 +102,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <Link to="/">
-          <b>Internal Knowledge base</b>
+          <b>IKB</b>
         </Link>
       </SidebarHeader>
       <SidebarContent>

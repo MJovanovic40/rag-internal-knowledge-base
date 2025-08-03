@@ -1,4 +1,4 @@
-import { MoreHorizontal, Trash2 } from "lucide-react";
+import { MessageSquareMore, MoreHorizontal, Trash2 } from "lucide-react";
 
 import {
   DropdownMenu,

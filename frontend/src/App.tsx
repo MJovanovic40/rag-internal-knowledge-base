@@ -8,6 +8,7 @@ import Layout from "./layouts/Layout";
 import LoginPage from "./pages/authentication/LoginPage";
 import RegisterPage from "./pages/authentication/RegisterPage";
 import ChatPage from "./pages/chat/ChatPage";
+import KnowledgeBase from "./pages/knowledge-base/KnowledgeBase";
 import { persistor, store } from "./store";
 
 const queryClient = new QueryClient();
@@ -25,6 +26,10 @@ export default function App() {
                 <Route
                   path="/"
                   element={<Layout pageComponent={<ChatPage />} showSidebar={true} />}
+                />
+                <Route
+                  path="/knowledge-base"
+                  element={<Layout pageComponent={<KnowledgeBase />} showSidebar={true} />}
                 />
               </Routes>
             </QueryClientProvider>

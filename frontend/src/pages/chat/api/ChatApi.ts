@@ -15,23 +15,11 @@ export type ChatHistoryResponse = {
 };
 
 export const getChats = async (): Promise<ChatResponse[]> => {
-  return (
-    await axiosClient.get(`/api/v1/chats/user`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("auth")}`,
-      },
-    })
-  ).data;
+  return (await axiosClient.get(`/api/v1/chats/user`)).data;
 };
 
 export const getChatHisotry = async (chatId: string): Promise<ChatHistoryResponse[]> => {
-  return (
-    await axiosClient.get(`/api/v1/chats/history/${chatId}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("auth")}`,
-      },
-    })
-  ).data;
+  return (await axiosClient.get(`/api/v1/chats/history/${chatId}`)).data;
 };
 
 export const sendMessage = async (
