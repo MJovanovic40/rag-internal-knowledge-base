@@ -3,12 +3,18 @@ package rs.raf.mjovanovic40.rag_internal_knowledge_base.chat.service.implementat
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.UserMessage;
+import org.springframework.ai.chat.prompt.PromptTemplate;
+import org.springframework.ai.chat.prompt.SystemPromptTemplate;
+import org.springframework.ai.document.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import rs.raf.mjovanovic40.rag_internal_knowledge_base.agent.graph.LLMGraphProvider;
+import rs.raf.mjovanovic40.rag_internal_knowledge_base.agent.graph.state.MyAgentState;
 import rs.raf.mjovanovic40.rag_internal_knowledge_base.agent.service.LLMService;
 import rs.raf.mjovanovic40.rag_internal_knowledge_base.chat.dto.ChatDto;
 import rs.raf.mjovanovic40.rag_internal_knowledge_base.chat.dto.response.ChatChunkResponse;
@@ -19,8 +25,12 @@ import rs.raf.mjovanovic40.rag_internal_knowledge_base.chat.service.ChatService;
 import rs.raf.mjovanovic40.rag_internal_knowledge_base.config.exception.CustomException;
 import rs.raf.mjovanovic40.rag_internal_knowledge_base.users.service.UserService;
 
+import java.time.Duration;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -30,10 +40,11 @@ public class ChatServiceImpl implements ChatService {
     private final ModelMapper modelMapper;
     private final ChatRepository chatRepository;
     private final UserService userService;
+    private final LLMService llmService;
 
     @Lazy
     @Autowired
-    private LLMService llmService;
+    private LLMGraphProvider llmGraphProvider;
 
     @Override
     public Chat findById(String id) {
@@ -54,7 +65,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public Flux<ServerSentEvent<ChatChunkResponse>> sendMessage(String chatId, String message, String userId) {
+    public Flux<ServerSentEvent<ChatChunkResponse>> sendMessage(String chatId, String message, String userId, Boolean useRag) {
         String title;
         if (chatId == null) {
             title = llmService.promptLLM(
@@ -64,10 +75,30 @@ public class ChatServiceImpl implements ChatService {
         } else {
             title = null;
         }
-
         String finalChatId = chatId;
-        return llmService
-                .streamLLM(chatId, new UserMessage(message))
+
+        Optional<MyAgentState> optState = llmGraphProvider.getGraph()
+                .invoke(
+                        Map.of(
+                                MyAgentState.PROMPT_KEY, message,
+                                MyAgentState.CONVERSATION_ID_KEY, finalChatId,
+                                MyAgentState.USE_RAG_KEY, useRag,
+                                MyAgentState.USER_ID_KEY, userId
+                        )
+                );
+
+        if(optState.isEmpty()) throw new CustomException("Error while executing graph.");
+
+        MyAgentState state = optState.get();
+
+        String responseText = state.response();
+
+        Flux<String> simulatedStream = Flux.fromIterable(responseText.chars()
+                        .mapToObj(c -> String.valueOf((char) c))
+                        .toList())
+                .delayElements(Duration.ofMillis(10));
+
+        return simulatedStream
                 .concatWith(Flux.just("END"))
                 .map(content -> new ChatChunkResponse(finalChatId, title, content))
                 .map(chunk -> ServerSentEvent.builder(chunk).build());

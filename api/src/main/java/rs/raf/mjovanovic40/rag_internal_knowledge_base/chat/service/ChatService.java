@@ -13,7 +13,7 @@ public interface ChatService {
     Chat findById(String id);
     Chat create(String title, String userId);
     void delete(String id);
-    Flux<ServerSentEvent<ChatChunkResponse>> sendMessage(String chatId, String message, String userId);
+    Flux<ServerSentEvent<ChatChunkResponse>> sendMessage(String chatId, String message, String userId, Boolean useRag);
     List<ChatDto> getUserChats(String userId);
     ChatDto findDtoById(String id);
 }

@@ -19,7 +19,7 @@ public class LLMProvider {
                 .ollamaApi(OllamaApi.builder().build())
                 .defaultOptions(
                         OllamaOptions.builder()
-                                .model("llama3.1")
+                                .model("llama3.2")
                                 .temperature(0d)
                         .build()
                 )

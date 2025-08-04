@@ -21,9 +21,6 @@ import java.util.Objects;
 @Service
 @RequiredArgsConstructor
 public class VectorStoreServiceImpl implements VectorStoreService {
-
-    private static final String ID_FIELD = "id";
-
     private final VectorStore vectorStore;
     private final MinioService minioService;
 
@@ -39,7 +36,13 @@ public class VectorStoreServiceImpl implements VectorStoreService {
                 .stream()
                 .map(doc -> {
                     if(doc.getText() == null) return null;
-                    return new org.springframework.ai.document.Document(doc.getText(), Map.of(ID_FIELD, document.getId()));
+                    return new org.springframework.ai.document.Document(
+                            doc.getText(),
+                            Map.of(
+                                    ID_FIELD, document.getId(),
+                                    USER_ID_FIELD, document.getUser().getId()
+                            )
+                    );
                 })
                 .filter(Objects::nonNull)
                 .toList();

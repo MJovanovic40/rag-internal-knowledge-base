@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.ai.chat.messages.MessageType;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.Objects;
 
@@ -13,7 +14,7 @@ import java.util.Objects;
 @Setter
 @ToString
 @RequiredArgsConstructor
-public class ChatMessage {
+public class ChatMessage implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

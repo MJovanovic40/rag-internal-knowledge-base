@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 import rs.raf.mjovanovic40.rag_internal_knowledge_base.users.enums.Role;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.Objects;
 
@@ -13,7 +14,7 @@ import java.util.Objects;
 @Setter
 @ToString
 @RequiredArgsConstructor
-public class User {
+public class User implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

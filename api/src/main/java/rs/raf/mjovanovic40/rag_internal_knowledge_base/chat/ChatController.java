@@ -28,7 +28,7 @@ public class ChatController {
 
     @PostMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<ChatChunkResponse>> sendMessage(@RequestBody @Validated ChatRequest body, @AuthenticationPrincipal AppUserDetails user) {
-        return chatService.sendMessage(body.getChatId(), body.getMessage(), user.getUser().getId());
+        return chatService.sendMessage(body.getChatId(), body.getMessage(), user.getUser().getId(), body.getUseRag());
     }
 
     @GetMapping("/{id}")

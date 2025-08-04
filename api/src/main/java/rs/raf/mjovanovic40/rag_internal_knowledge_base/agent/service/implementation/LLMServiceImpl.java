@@ -2,11 +2,7 @@ package rs.raf.mjovanovic40.rag_internal_knowledge_base.agent.service.implementa
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
-import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.messages.Message;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import rs.raf.mjovanovic40.rag_internal_knowledge_base.agent.service.LLMService;
@@ -17,26 +13,20 @@ public class LLMServiceImpl implements LLMService {
 
     private final ChatClient chatClient;
 
-    @Autowired
-    @Lazy
-    private ChatMemory chatMemory;
-
     @Override
-    public Flux<String> streamLLM(String chatId, Message message) {
+    public Flux<String> streamLLM(Message ...messages) {
         return chatClient
                 .prompt()
-                .advisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
-                .advisors(s -> s.param(ChatMemory.CONVERSATION_ID, chatId))
-                .messages(message)
+                .messages(messages)
                 .stream()
                 .content();
     }
 
     @Override
-    public String promptLLM(Message message) {
+    public String promptLLM(Message ...messages) {
         return chatClient
                 .prompt()
-                .messages(message)
+                .messages(messages)
                 .call()
                 .content();
     }

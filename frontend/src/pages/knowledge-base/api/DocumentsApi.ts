@@ -17,11 +17,11 @@ export const deleteDocument = async (id: string) => {
   await axiosClient.delete(`/api/v1/knowledge-base/${id}`);
 };
 
-export const uploadFiles = async (files: string | Blob) => {
+export const uploadFiles = async (files: File[]) => {
   const formData = new FormData();
-  formData.append("files", files);
+  files.forEach((file) => formData.append("files", file));
 
-  await axiosClient.post("/api/v1/knowledge-base", {
+  await axiosClient.post("/api/v1/knowledge-base", formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },

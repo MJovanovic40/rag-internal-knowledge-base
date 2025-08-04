@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { DialogHeader } from "@/components/ui/dialog";
+import UploadDropzone from "@/components/ui/dropzone";
 import PDFModal from "@/components/ui/pdf-modal";
 import {
   Table,
@@ -10,14 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useAppSelector } from "@/hooks";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-  DialogTrigger,
-} from "@radix-ui/react-dialog";
-import { Search, Trash } from "lucide-react";
+import { Plus, Search, Trash, Upload } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { deleteDocument, getDocument, getDocuments } from "./api/DocumentsApi";
@@ -26,6 +19,8 @@ import { removeDocument, setDocuments, type Document } from "./state/documentsSl
 export default function KnowledgeBase() {
   const [showModal, setShowModal] = useState(false);
   const [pdfUrl, setPdfUrl] = useState("");
+
+  const [showDropzone, setShowDropzone] = useState<boolean>(false);
 
   const documents = useAppSelector((state) => state.documents.documents);
   const dispatch = useDispatch();
@@ -50,6 +45,14 @@ export default function KnowledgeBase() {
     setShowModal(false);
   };
 
+  const handleOpenDropzone = () => {
+    setShowDropzone(true);
+  };
+
+  const handleCloseDropzone = () => {
+    setShowDropzone(false);
+  };
+
   useEffect(() => {
     fetchDocuments();
   }, []);
@@ -57,7 +60,13 @@ export default function KnowledgeBase() {
   return (
     <>
       <PDFModal isOpen={showModal} onClose={handlePdfClose} pdfUrl={pdfUrl} />
+      <UploadDropzone isOpen={showDropzone} onClose={handleCloseDropzone} />
       <div className="w-[90%] xl:w-[60%] mt-22">
+        Number of documents: {documents.length}
+        <Button className="float-end" onClick={handleOpenDropzone}>
+          <Upload />
+          Upload
+        </Button>
         <Table>
           <TableHeader>
             <TableRow>

@@ -16,4 +16,5 @@ public class ChatRequest {
     @NotEmpty
     private String message;
     private String chatId;
+    private Boolean useRag = true;
 }
