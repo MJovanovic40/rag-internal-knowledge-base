@@ -17,4 +17,5 @@ public class ChatRequest {
     private String message;
     private String chatId;
     private Boolean useRag = true;
+    private String model;
 }

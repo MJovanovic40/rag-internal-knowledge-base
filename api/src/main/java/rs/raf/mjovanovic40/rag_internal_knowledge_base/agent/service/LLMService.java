@@ -5,6 +5,6 @@ import reactor.core.publisher.Flux;
 
 public interface LLMService {
 
-    Flux<String> streamLLM(Message ...messages);
-    String promptLLM(Message ...messages);
+    Flux<String> streamLLM(String model, Message ...messages);
+    String promptLLM(String model, Message ...messages);
 }

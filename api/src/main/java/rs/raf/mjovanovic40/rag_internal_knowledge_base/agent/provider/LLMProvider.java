@@ -6,30 +6,28 @@ import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.ollama.OllamaChatModel;
 import org.springframework.ai.ollama.api.OllamaApi;
 import org.springframework.ai.ollama.api.OllamaOptions;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 public class LLMProvider {
 
-    private ChatModel getChatModel() {
+    private ChatModel getChatModel(String model) {
         return OllamaChatModel
                 .builder()
                 .ollamaApi(OllamaApi.builder().build())
                 .defaultOptions(
                         OllamaOptions.builder()
-                                .model("llama3.2")
+                                .model(model)
                                 .temperature(0d)
                         .build()
                 )
                 .build();
     }
 
-    @Bean
-    private ChatClient getChatClient() {
+    public ChatClient getChatClient(String model) {
         return ChatClient
-                .builder(getChatModel())
+                .builder(getChatModel(model))
                 .build();
     }
 }

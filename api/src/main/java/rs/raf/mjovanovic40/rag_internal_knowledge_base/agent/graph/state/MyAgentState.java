@@ -3,8 +3,6 @@ package rs.raf.mjovanovic40.rag_internal_knowledge_base.agent.graph.state;
 import org.bsc.langgraph4j.state.AgentState;
 import org.bsc.langgraph4j.state.Channel;
 import org.bsc.langgraph4j.state.Channels;
-import org.springframework.ai.chat.messages.Message;
-import org.springframework.ai.document.Document;
 import rs.raf.mjovanovic40.rag_internal_knowledge_base.chat.model.ChatMessage;
 
 import java.util.ArrayList;
@@ -21,6 +19,7 @@ public class MyAgentState extends AgentState {
     public static final String USE_RAG_KEY = "useRag";
     public static final String USER_ID_KEY = "userId";
     public static final String CONTEXT_KEY = "context";
+    public static final String MODEL_KEY = "model";
 
     public static final Map<String, Channel<?>> SCHEMA = Map.of(
             PROMPT_KEY, Channels.base((oldV, newV) -> newV),
@@ -30,7 +29,8 @@ public class MyAgentState extends AgentState {
             RESPONSE_KEY, Channels.base((oldV, newV) -> newV),
             USE_RAG_KEY, Channels.base((oldV, newV) -> newV),
             USER_ID_KEY, Channels.base((oldV, newV) -> newV),
-            CONTEXT_KEY, Channels.base((oldV, newV) -> newV)
+            CONTEXT_KEY, Channels.base((oldV, newV) -> newV),
+            MODEL_KEY, Channels.base((oldV, newV) -> newV)
     );
 
     public MyAgentState(Map<String, Object> initData) {
@@ -67,5 +67,9 @@ public class MyAgentState extends AgentState {
 
     public List<String> context() {
         return this.<List<String>>value(CONTEXT_KEY).orElse(new ArrayList<>());
+    }
+
+    public String model() {
+        return this.<String>value(MODEL_KEY).orElse("");
     }
 }

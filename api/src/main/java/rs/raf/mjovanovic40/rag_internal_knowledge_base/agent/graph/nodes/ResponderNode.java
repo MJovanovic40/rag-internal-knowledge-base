@@ -22,7 +22,7 @@ public class ResponderNode implements NodeAction<MyAgentState> {
         String resp;
 
         if(Boolean.FALSE.equals(state.useRag())) {
-             resp = llmService.promptLLM(new UserMessage(state.enhancedPrompt()));
+             resp = llmService.promptLLM(state.model(), new UserMessage(state.enhancedPrompt()));
              return Map.of(MyAgentState.RESPONSE_KEY, resp);
         }
 
@@ -50,7 +50,7 @@ public class ResponderNode implements NodeAction<MyAgentState> {
 
         Message systemMessage = new SystemPromptTemplate(systemPrompt).createMessage(Map.of("context", state.context()));
 
-        resp = llmService.promptLLM(systemMessage, new UserMessage(state.enhancedPrompt()));
+        resp = llmService.promptLLM(state.model(), systemMessage, new UserMessage(state.enhancedPrompt()));
 
         return Map.of(MyAgentState.RESPONSE_KEY, resp);
     }

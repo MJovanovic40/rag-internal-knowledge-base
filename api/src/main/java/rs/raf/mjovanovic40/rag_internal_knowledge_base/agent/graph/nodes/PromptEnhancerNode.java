@@ -2,27 +2,24 @@ package rs.raf.mjovanovic40.rag_internal_knowledge_base.agent.graph.nodes;
 
 import lombok.RequiredArgsConstructor;
 import org.bsc.langgraph4j.action.NodeAction;
-import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.MessageType;
 import org.springframework.ai.chat.messages.UserMessage;
-import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.stereotype.Component;
-import rs.raf.mjovanovic40.rag_internal_knowledge_base.agent.graph.model.EnhancedPrompt;
 import rs.raf.mjovanovic40.rag_internal_knowledge_base.agent.graph.state.MyAgentState;
+import rs.raf.mjovanovic40.rag_internal_knowledge_base.agent.service.LLMService;
 import rs.raf.mjovanovic40.rag_internal_knowledge_base.chat.model.ChatMessage;
 import rs.raf.mjovanovic40.rag_internal_knowledge_base.config.exception.CustomException;
 
-import java.util.List;
 import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
 public class PromptEnhancerNode implements NodeAction<MyAgentState> {
 
-    private final ChatClient chatClient;
+    private final LLMService llmService;
 
     @Override
     public Map<String, Object> apply(MyAgentState myAgentState){
@@ -55,11 +52,7 @@ public class PromptEnhancerNode implements NodeAction<MyAgentState> {
                         "query", myAgentState.prompt()
                 ));
 
-        System.out.println(systemMessage);
-
-        Prompt prompt = new Prompt(systemMessage);
-
-        String newPrompt = chatClient.prompt(prompt).call().content();
+        String newPrompt = llmService.promptLLM(myAgentState.model(), systemMessage);
 
         if(newPrompt == null) throw new CustomException("PromptEnhancerNode: Cannot generate enhanced prompt.");
 

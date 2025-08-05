@@ -3,11 +3,7 @@ package rs.raf.mjovanovic40.rag_internal_knowledge_base.chat.service.implementat
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.UserMessage;
-import org.springframework.ai.chat.prompt.PromptTemplate;
-import org.springframework.ai.chat.prompt.SystemPromptTemplate;
-import org.springframework.ai.document.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.codec.ServerSentEvent;
@@ -30,7 +26,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -65,12 +60,14 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public Flux<ServerSentEvent<ChatChunkResponse>> sendMessage(String chatId, String message, String userId, Boolean useRag) {
+    public Flux<ServerSentEvent<ChatChunkResponse>> sendMessage(String chatId, String message, String userId, Boolean useRag, String model) {
         String title;
         if (chatId == null) {
             title = llmService.promptLLM(
-                    new UserMessage("Generate a title (only consisting of a few words without any reasoning) for the topic of the following prompt: " + message)
+                    model,
+                    new UserMessage("Generate a title (only consisting of a few words without any reasoning, up to 255 characters - without quotes) for the topic of the following prompt: " + message)
             );
+            System.out.println(title);
             chatId = create(title, userId).getId();
         } else {
             title = null;
@@ -83,7 +80,8 @@ public class ChatServiceImpl implements ChatService {
                                 MyAgentState.PROMPT_KEY, message,
                                 MyAgentState.CONVERSATION_ID_KEY, finalChatId,
                                 MyAgentState.USE_RAG_KEY, useRag,
-                                MyAgentState.USER_ID_KEY, userId
+                                MyAgentState.USER_ID_KEY, userId,
+                                MyAgentState.MODEL_KEY, model
                         )
                 );
 
