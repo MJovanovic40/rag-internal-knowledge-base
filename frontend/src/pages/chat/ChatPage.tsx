@@ -1,5 +1,14 @@
 import ChatMessage from "@/components/chat/chat-message";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useAppSelector } from "@/hooks";
 import { ArrowUp } from "lucide-react";
@@ -18,6 +27,8 @@ export default function ChatPage() {
   const [messages, setMessages] = useState<ChatHistoryResponse[]>([]);
   const [input, setInput] = useState<string>("");
   const [streaming, setStreaming] = useState<boolean>(false);
+  const [useRag, setUseRag] = useState<boolean>(true);
+  const [model, setModel] = useState<string>("llama3.1");
 
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -82,7 +93,7 @@ export default function ChatPage() {
     ]);
 
     try {
-      const reader = await sendMessage(chatId, input);
+      const reader = await sendMessage(chatId, input, useRag, model);
       const decoder = new TextDecoder();
       let buffer = "";
 
@@ -210,15 +221,22 @@ export default function ChatPage() {
               <ChatMessage key={`message-${i}`} type={message.messageType} text={message.message} />
             );
           })}
-        <span ref={chatEndRef} className="h-20"></span>
+        <span ref={chatEndRef} className="h-28"></span>
       </div>
       <div
-        className={`w-full h-20 bg-neutral-900 fixed bottom-${messages.length == 0 ? "1/2" : "0"}`}
+        className={`w-full h-20 bg-neutral-900 fixed top-auto mb-10 bottom-${
+          messages.length == 0 ? "1/2" : "0"
+        }`}
       >
         {messages && messages.length == 0 && (
           <h1 className="text-4xl text-center w-1/2 pb-6">What would you like to talk about?</h1>
         )}
-        <form ref={formRef} style={{ width: chatWidth }} onSubmit={onSubmit}>
+        <form
+          className="bg-neutral-900"
+          ref={formRef}
+          style={{ width: chatWidth }}
+          onSubmit={onSubmit}
+        >
           <div className="flex justify-center items-center gap-3 pb-3 w-full">
             <Textarea
               value={input}
@@ -232,6 +250,25 @@ export default function ChatPage() {
             <Button disabled={!input || streaming} type="submit" className="rounded-2xl w-12 h-12">
               <ArrowUp />
             </Button>
+          </div>
+          <div className="flex gap-5 ml-1">
+            <div className="flex items-center gap-2">
+              <Checkbox checked={useRag} onCheckedChange={() => setUseRag(!useRag)} id="rag" />
+              <Label htmlFor="rag">Use RAG</Label>
+            </div>
+            <div className="flex gap-2">
+              <Label>Model:</Label>
+              <Select defaultValue="llama3.1" onValueChange={(e) => setModel(e)} value={model}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Model" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="llama3.1">LLama 3.1</SelectItem>
+                  <SelectItem value="llama3.2">LLama 3.2</SelectItem>
+                  <SelectItem value="deepseek-r1:14b">DeepSeek R1 (14B)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </form>
       </div>

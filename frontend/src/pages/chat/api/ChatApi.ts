@@ -24,7 +24,9 @@ export const getChatHisotry = async (chatId: string): Promise<ChatHistoryRespons
 
 export const sendMessage = async (
   chatId: string | null,
-  message: string
+  message: string,
+  useRag: boolean,
+  model: string
 ): Promise<ReadableStreamDefaultReader<Uint8Array>> => {
   const response = await fetch(`/api/v1/chats`, {
     method: "POST",
@@ -32,7 +34,7 @@ export const sendMessage = async (
       "Content-Type": "application/json",
       Authorization: `Bearer ${localStorage.getItem("auth")}`,
     },
-    body: JSON.stringify({ chatId, message }),
+    body: JSON.stringify({ chatId, message, useRag, model }),
   });
 
   if (!response.ok || !response.body) {
