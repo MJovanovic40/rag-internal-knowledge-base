@@ -24,10 +24,19 @@ public class LLMServiceImpl implements LLMService {
 
     @Override
     public String promptLLM(String model, Message ...messages) {
-        return llmProvider.getChatClient(model)
+        String resp = llmProvider.getChatClient(model)
                 .prompt()
                 .messages(messages)
                 .call()
                 .content();
+
+        if (resp == null) return "[Error during generation]";
+
+        int thinkEndIndex = resp.lastIndexOf("</think>");
+
+        if(thinkEndIndex > 0) {
+            resp = resp.substring(thinkEndIndex + 8).strip();
+        }
+        return resp;
     }
 }

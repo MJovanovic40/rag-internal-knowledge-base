@@ -56,8 +56,6 @@ public class PromptEnhancerNode implements NodeAction<MyAgentState> {
 
         if(newPrompt == null) throw new CustomException("PromptEnhancerNode: Cannot generate enhanced prompt.");
 
-        System.out.println(newPrompt);
-
         return Map.of(MyAgentState.ENHANCED_PROMPT_KEY, newPrompt);
     }
 

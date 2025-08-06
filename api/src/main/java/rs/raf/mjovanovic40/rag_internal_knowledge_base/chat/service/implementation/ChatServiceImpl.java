@@ -65,9 +65,8 @@ public class ChatServiceImpl implements ChatService {
         if (chatId == null) {
             title = llmService.promptLLM(
                     model,
-                    new UserMessage("Generate a title (only consisting of a few words without any reasoning, up to 255 characters - without quotes) for the topic of the following prompt: " + message)
+                    new UserMessage("Generate a title (only consisting of a few words without any reasoning, up to 255 characters - only use alphanumerical characters and don't use markdown) for the topic of the following prompt: " + message)
             );
-            System.out.println(title);
             chatId = create(title, userId).getId();
         } else {
             title = null;

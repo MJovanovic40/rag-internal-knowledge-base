@@ -22,6 +22,7 @@ const UploadDropzone: React.FC<DropzoneProps> = ({ onClose, isOpen }) => {
     setFiles(undefined);
     setWorking(false);
     onClose();
+    location.reload();
   };
 
   const handleUpload = async () => {

@@ -36,7 +36,8 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
       const user = await getUserDetails();
       dispatch(setUser(user));
 
-      navigate("/");
+      // navigate("/");
+      location.href = "/";
     },
     onError: (error: AxiosError<ErrorResponse>) => {
       setWorking(false);
